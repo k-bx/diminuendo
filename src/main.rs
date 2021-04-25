@@ -1,9 +1,18 @@
+#![feature(backtrace)]
+use std::backtrace::Backtrace;
+use std::time::Duration;
 use thiserror::Error;
 
 #[derive(Error, Debug)]
 pub enum AppError {
     #[error("Error: {msg}")]
     BL { msg: String },
+    #[error("libusb::Error")]
+    Libusb {
+        #[from]
+        source: libusb::Error,
+        backtrace: Backtrace,
+    },
 }
 
 pub fn bl_err(s: &str) -> AppError {
@@ -25,7 +34,7 @@ fn main() {
             device_desc.product_id(),
         );
 
-        if device_desc.vendor_id() == 0944 && device_desc.product_id() == 0111 {
+        if device_desc.vendor_id() == 944 && device_desc.product_id() == 111 {
             thedevice = Some(device);
         }
     }
@@ -39,5 +48,14 @@ fn main() {
 }
 
 fn main2(device: libusb::Device) -> Result<(), AppError> {
+    let mut handle = device.open()?;
+    handle.reset()?;
+
+    let timeout = Duration::from_secs(1);
+    let languages = handle.read_languages(timeout)?;
+
+    println!("Active configuration: {}", handle.active_configuration()?);
+    println!("Languages: {:?}", languages);
+
     Ok(())
 }
