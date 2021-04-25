@@ -150,7 +150,7 @@ fn read_endpoint(
     println!(" - kernel driver? {}", has_kernel_driver);
 
     match configure_endpoint(handle, &endpoint) {
-        Ok(_) => {
+        Ok(_) => loop {
             let mut vec = Vec::<u8>::with_capacity(256);
             let buf =
                 unsafe { slice::from_raw_parts_mut((&mut vec[..]).as_mut_ptr(), vec.capacity()) };
@@ -178,7 +178,7 @@ fn read_endpoint(
                 }
                 _ => (),
             }
-        }
+        },
         Err(err) => println!("could not configure endpoint: {}", err),
     }
 
