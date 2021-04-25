@@ -21,33 +21,28 @@ pub fn bl_err(s: &str) -> AppError {
 
 fn main() {
     let context = libusb::Context::new().unwrap();
-    let mut thedevice = None;
 
     for device in context.devices().unwrap().iter() {
         let device_desc = device.device_descriptor().unwrap();
 
         println!(
-            "Bus {:03} Device {:03} ID {:04x}:{:04x}",
+            "Bus {:03} Device {:03} ID {:04x}:{:04x} ({}:{})",
             device.bus_number(),
             device.address(),
+            device_desc.vendor_id(),
+            device_desc.product_id(),
             device_desc.vendor_id(),
             device_desc.product_id(),
         );
 
         if device_desc.vendor_id() == 944 && device_desc.product_id() == 111 {
-            thedevice = Some(device);
+            main2(device, &device_desc).unwrap()
         }
     }
-
-    match thedevice {
-        None => {
-            panic!("Couldn't find a suitable USB-MIDI device");
-        }
-        Some(thedevice) => main2(thedevice).unwrap(),
-    }
+    println!("Exiting...");
 }
 
-fn main2(device: libusb::Device) -> Result<(), AppError> {
+fn main2(device: libusb::Device, device_desc: &libusb::DeviceDescriptor) -> Result<(), AppError> {
     let mut handle = device.open()?;
     handle.reset()?;
 
@@ -56,6 +51,31 @@ fn main2(device: libusb::Device) -> Result<(), AppError> {
 
     println!("Active configuration: {}", handle.active_configuration()?);
     println!("Languages: {:?}", languages);
+
+    if languages.len() > 0 {
+        let language = languages[0];
+
+        println!(
+            "Manufacturer: {:?}",
+            handle
+                .read_manufacturer_string(language, device_desc, timeout)
+                .ok()
+        );
+        println!(
+            "Product: {:?}",
+            handle
+                .read_product_string(language, device_desc, timeout)
+                .ok()
+        );
+        println!(
+            "Serial Number: {:?}",
+            handle
+                .read_serial_number_string(language, device_desc, timeout)
+                .ok()
+        );
+    } else {
+        eprintln!("Warning: languages.len() == 0");
+    }
 
     Ok(())
 }
