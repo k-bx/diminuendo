@@ -26,16 +26,14 @@ fn main() {
         let device_desc = device.device_descriptor().unwrap();
 
         println!(
-            "Bus {:03} Device {:03} ID {:04x}:{:04x} ({}:{})",
+            "Bus {:03} Device {:03} ID {:04x}:{:04x}",
             device.bus_number(),
             device.address(),
             device_desc.vendor_id(),
             device_desc.product_id(),
-            device_desc.vendor_id(),
-            device_desc.product_id(),
         );
 
-        if device_desc.vendor_id() == 944 && device_desc.product_id() == 111 {
+        if device_desc.vendor_id() == 0x944 && device_desc.product_id() == 0x111 {
             main2(device, &device_desc).unwrap()
         }
     }
