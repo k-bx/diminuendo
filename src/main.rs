@@ -21,7 +21,8 @@ pub fn bl_err(s: &str) -> AppError {
 
 fn main() {
     let mut context = libusb::Context::new().unwrap();
-    context.set_log_level(libusb::LogLevel::Debug);
+    // context.set_log_level(libusb::LogLevel::Debug);
+    context.set_log_level(libusb::LogLevel::Info);
 
     for device in context.devices().unwrap().iter() {
         let device_desc = device.device_descriptor().unwrap();
