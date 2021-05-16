@@ -162,7 +162,9 @@ fn read_endpoint(
                     match handle.read_interrupt(endpoint.address, buf, timeout) {
                         Ok(len) => {
                             unsafe { vec.set_len(len) };
-                            println!(" - read: {:?}", vec);
+                            let nonzeroes: Vec<u8> =
+                                vec.iter().filter(|x| **x != 0).map(|x| *x).collect();
+                            println!(" - read nonzeroes: {:?}", nonzeroes);
                         }
                         Err(err) => println!("could not read from endpoint: {}", err),
                     }
@@ -171,7 +173,9 @@ fn read_endpoint(
                     match handle.read_bulk(endpoint.address, buf, timeout) {
                         Ok(len) => {
                             unsafe { vec.set_len(len) };
-                            println!(" - read: {:?}", vec);
+                            let nonzeroes: Vec<u8> =
+                                vec.iter().filter(|x| **x != 0).map(|x| *x).collect();
+                            println!(" - read nonzeroes 2: {:?}", nonzeroes);
                         }
                         Err(err) => println!("could not read from endpoint: {}", err),
                     }
