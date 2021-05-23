@@ -168,13 +168,7 @@ fn read_endpoint(
                     match handle.read_interrupt(endpoint.address, buf, timeout) {
                         Ok(len) => {
                             unsafe { vec.set_len(len) };
-                            let nonzeroes: Vec<u8> =
-                                vec.iter().filter(|x| **x != 0).map(|x| *x).collect();
-                            let nonzeroes_hex_strs: Vec<String> =
-                                nonzeroes.iter().map(|x| format!("{:#04x}", *x)).collect();
-                            if nonzeroes.len() > 0 {
-                                println!(" - read nonzeroes: {:?}", nonzeroes_hex_strs);
-                            }
+                            process(&vec);
                         }
                         Err(err) => println!("could not read from endpoint: {}", err),
                     }
@@ -183,13 +177,7 @@ fn read_endpoint(
                     match handle.read_bulk(endpoint.address, buf, timeout) {
                         Ok(len) => {
                             unsafe { vec.set_len(len) };
-                            let nonzeroes: Vec<u8> =
-                                vec.iter().filter(|x| **x != 0).map(|x| *x).collect();
-                            let nonzeroes_hex_strs: Vec<String> =
-                                nonzeroes.iter().map(|x| format!("{:#04x}", *x)).collect();
-                            if nonzeroes.len() > 0 {
-                                println!(" - read nonzeroes 2: {:?}", nonzeroes_hex_strs);
-                            }
+                            process(&vec);
                         }
                         Err(err) => println!("could not read from endpoint: {}", err),
                     }
@@ -213,4 +201,13 @@ fn configure_endpoint<'a>(
     handle.claim_interface(endpoint.iface)?;
     handle.set_alternate_setting(endpoint.iface, endpoint.setting)?;
     Ok(())
+}
+
+fn process(vec: &Vec<u8>) {
+    let nonzeroes: Vec<u8> = vec.iter().filter(|x| **x != 0).map(|x| *x).collect();
+    let nonzeroes_hex_strs: Vec<String> =
+        nonzeroes.iter().map(|x| format!("{:#04X}", *x)).collect();
+    if nonzeroes.len() > 0 {
+        println!(" - read nonzeroes: {:?}", nonzeroes_hex_strs);
+    }
 }
