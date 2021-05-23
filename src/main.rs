@@ -214,6 +214,11 @@ fn process(vec: &Vec<u8>) {
             nonzeroes.remove(i);
             do_inc = false;
         }
+        if nonzeroes[i] == 0x0f && nonzeroes[i + 1] == 0xfe {
+            nonzeroes.remove(i);
+            nonzeroes.remove(i);
+            do_inc = false;
+        }
         if do_inc {
             i += 1;
         }
