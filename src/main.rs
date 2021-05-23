@@ -208,7 +208,7 @@ fn process(vec: &Vec<u8>) {
     let mut i = 0;
     // clean up the signal
     while i < nonzeroes.len() - 1 {
-        if nonzeroes[i] == 0x09 && nonzeroes[i + 1] == 0xf8 {
+        if nonzeroes[i] == 0x0f && nonzeroes[i + 1] == 0xf8 {
             nonzeroes.remove(i);
             nonzeroes.remove(i);
             i -= 1;
