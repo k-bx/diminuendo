@@ -34,16 +34,20 @@ fn main() {
     // context.set_log_level(libusb::LogLevel::Debug);
     context.set_log_level(libusb::LogLevel::Info);
 
-    for mut device in context.devices().unwrap().iter() {
+    for device in context.devices().unwrap().iter() {
         let device_desc = device.device_descriptor().unwrap();
 
-        // println!(
-        //     "Bus {:03} Device {:03} ID {:04x}:{:04x}",
-        //     device.bus_number(),
-        //     device.address(),
-        //     device_desc.vendor_id(),
-        //     device_desc.product_id(),
-        // );
+        println!(
+            "Bus {:03} Device {:03} ID {:04x}:{:04x}",
+            device.bus_number(),
+            device.address(),
+            device_desc.vendor_id(),
+            device_desc.product_id(),
+        );
+    }
+
+    for mut device in context.devices().unwrap().iter() {
+        let device_desc = device.device_descriptor().unwrap();
 
         if device_desc.vendor_id() == 0x944 && device_desc.product_id() == 0x111 {
             main2(&mut device, &device_desc).unwrap()
