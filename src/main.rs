@@ -4,6 +4,8 @@ use std::backtrace::Backtrace;
 use std::slice;
 use std::time::Duration;
 use thiserror::Error;
+use tokio;
+use tokio::sync::mpsc;
 
 #[derive(Error, Debug)]
 pub enum AppError {
@@ -59,6 +61,13 @@ fn main() {
 }
 
 fn main2(device: &mut Device, device_desc: &DeviceDescriptor) -> Result<(), AppError> {
+    let (events_snd, events_rcv): (
+        mpsc::UnboundedSender<Vec<u8>>,
+        mpsc::UnboundedReceiver<Vec<u8>>,
+    ) = mpsc::unbounded_channel();
+
+    // std::thread::spawn(
+
     let mut handle = device.open()?;
     handle.reset()?;
 
@@ -227,4 +236,9 @@ fn process(vec: &Vec<u8>) {
     if nonzeroes.len() > 0 {
         println!(" - read nonzeroes: {:?}", nonzeroes_hex_strs);
     }
+}
+
+#[tokio::main]
+async fn event_writer(events_rcv: mpsc::UnboundedReceiver<Vec<u8>>) {
+    // todo
 }

@@ -3,6 +3,7 @@ name = "diminuendo"
 version = "0.1.0"
 authors = ["Kon Rybnikov <k-bx@k-bx.com>"]
 edition = "2018"
+resolver = "2"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
@@ -10,3 +11,4 @@ edition = "2018"
 libusb = "~0.3.0"
 thiserror = "~1.0.24"
 sqlx = { version = "~0.5.4", features = [ "runtime-tokio-rustls", "sqlite" ] }
+tokio = { version = "~1.6.0", features = [ "full" ] }
