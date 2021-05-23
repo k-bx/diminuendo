@@ -170,8 +170,10 @@ fn read_endpoint(
                             unsafe { vec.set_len(len) };
                             let nonzeroes: Vec<u8> =
                                 vec.iter().filter(|x| **x != 0).map(|x| *x).collect();
+                            let nonzeroes_hex_strs: Vec<String> =
+                                nonzeroes.iter().map(|x| format!("{:#04x}", *x)).collect();
                             if nonzeroes.len() > 0 {
-                                println!(" - read nonzeroes: {:?}", nonzeroes);
+                                println!(" - read nonzeroes: {:?}", nonzeroes_hex_strs);
                             }
                         }
                         Err(err) => println!("could not read from endpoint: {}", err),
@@ -183,8 +185,10 @@ fn read_endpoint(
                             unsafe { vec.set_len(len) };
                             let nonzeroes: Vec<u8> =
                                 vec.iter().filter(|x| **x != 0).map(|x| *x).collect();
+                            let nonzeroes_hex_strs: Vec<String> =
+                                nonzeroes.iter().map(|x| format!("{:#04x}", *x)).collect();
                             if nonzeroes.len() > 0 {
-                                println!(" - read nonzeroes 2: {:?}", nonzeroes);
+                                println!(" - read nonzeroes 2: {:?}", nonzeroes_hex_strs);
                             }
                         }
                         Err(err) => println!("could not read from endpoint: {}", err),
