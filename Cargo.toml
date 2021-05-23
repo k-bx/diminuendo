@@ -9,3 +9,4 @@ edition = "2018"
 [dependencies]
 libusb = "~0.3.0"
 thiserror = "~1.0.24"
+sqlx = { version = "~0.5.4", features = [ "runtime-tokio-rustls", "sqlite" ] }
