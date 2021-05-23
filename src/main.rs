@@ -208,12 +208,15 @@ fn process(vec: &Vec<u8>) {
     let mut i = 0;
     // clean up the signal
     while i < nonzeroes.len() - 1 {
+        let mut do_inc = true;
         if nonzeroes[i] == 0x0f && nonzeroes[i + 1] == 0xf8 {
             nonzeroes.remove(i);
             nonzeroes.remove(i);
-            i -= 1;
+            do_inc = false;
         }
-        i += 1;
+        if do_inc {
+            i += 1;
+        }
     }
     let nonzeroes_hex_strs: Vec<String> =
         nonzeroes.iter().map(|x| format!("{:#04X}", *x)).collect();
