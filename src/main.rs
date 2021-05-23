@@ -204,7 +204,17 @@ fn configure_endpoint<'a>(
 }
 
 fn process(vec: &Vec<u8>) {
-    let nonzeroes: Vec<u8> = vec.iter().filter(|x| **x != 0).map(|x| *x).collect();
+    let mut nonzeroes: Vec<u8> = vec.iter().filter(|x| **x != 0).map(|x| *x).collect();
+    let mut i = 0;
+    // clean up the signal
+    while i < nonzeroes.len() - 1 {
+        if nonzeroes[i] == 0x09 && nonzeroes[i + 1] == 0xf8 {
+            nonzeroes.remove(i);
+            nonzeroes.remove(i);
+            i -= 2;
+        }
+        i += 1;
+    }
     let nonzeroes_hex_strs: Vec<String> =
         nonzeroes.iter().map(|x| format!("{:#04X}", *x)).collect();
     if nonzeroes.len() > 0 {
