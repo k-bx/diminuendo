@@ -207,7 +207,7 @@ fn process(vec: &Vec<u8>) {
     let mut nonzeroes: Vec<u8> = vec.iter().filter(|x| **x != 0).map(|x| *x).collect();
     let mut i = 0;
     // clean up the signal
-    while i < nonzeroes.len() - 1 {
+    while i + 1 < nonzeroes.len() {
         let mut do_inc = true;
         if nonzeroes[i] == 0x0f && nonzeroes[i + 1] == 0xf8 {
             nonzeroes.remove(i);
