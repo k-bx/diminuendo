@@ -211,7 +211,7 @@ fn process(vec: &Vec<u8>) {
         if nonzeroes[i] == 0x09 && nonzeroes[i + 1] == 0xf8 {
             nonzeroes.remove(i);
             nonzeroes.remove(i);
-            i -= 2;
+            i -= 1;
         }
         i += 1;
     }
