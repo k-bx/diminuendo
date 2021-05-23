@@ -49,7 +49,9 @@ fn main() {
     for mut device in context.devices().unwrap().iter() {
         let device_desc = device.device_descriptor().unwrap();
 
-        if device_desc.vendor_id() == 0x944 && device_desc.product_id() == 0x111 {
+        let is_mini_korg = device_desc.vendor_id() == 0x944 && device_desc.product_id() == 0x111;
+        let is_big_yamaha = device_desc.vendor_id() == 0x499 && device_desc.product_id() == 0x1039;
+        if is_mini_korg || is_big_yamaha {
             main2(&mut device, &device_desc).unwrap()
         }
     }
