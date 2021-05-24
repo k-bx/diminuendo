@@ -1,5 +1,7 @@
 #![feature(backtrace)]
+use chrono::prelude::*;
 use libusb::{Device, DeviceDescriptor};
+use sqlx::sqlite::SqlitePoolOptions;
 use std::backtrace::Backtrace;
 use std::slice;
 use std::time::Duration;
@@ -66,7 +68,9 @@ fn main2(device: &mut Device, device_desc: &DeviceDescriptor) -> Result<(), AppE
         mpsc::UnboundedReceiver<Vec<u8>>,
     ) = mpsc::unbounded_channel();
 
-    // std::thread::spawn(
+    std::thread::spawn(move || {
+        event_writer(events_rcv);
+    });
 
     let mut handle = device.open()?;
     handle.reset()?;
@@ -103,12 +107,22 @@ fn main2(device: &mut Device, device_desc: &DeviceDescriptor) -> Result<(), AppE
     }
 
     match find_readable_endpoint(device, device_desc, libusb::TransferType::Interrupt) {
-        Some(endpoint) => read_endpoint(&mut handle, endpoint, libusb::TransferType::Interrupt),
+        Some(endpoint) => read_endpoint(
+            &mut handle,
+            endpoint,
+            libusb::TransferType::Interrupt,
+            &events_snd,
+        ),
         None => println!("No readable interrupt endpoint"),
     }
 
     match find_readable_endpoint(device, device_desc, libusb::TransferType::Bulk) {
-        Some(endpoint) => read_endpoint(&mut handle, endpoint, libusb::TransferType::Bulk),
+        Some(endpoint) => read_endpoint(
+            &mut handle,
+            endpoint,
+            libusb::TransferType::Bulk,
+            &events_snd,
+        ),
         None => println!("No readable bulk endpoint"),
     }
 
@@ -151,6 +165,7 @@ fn read_endpoint(
     handle: &mut libusb::DeviceHandle,
     endpoint: Endpoint,
     transfer_type: libusb::TransferType,
+    events_snd: &mpsc::UnboundedSender<Vec<u8>>,
 ) {
     println!("Reading from endpoint: {:?}", endpoint);
 
@@ -177,7 +192,7 @@ fn read_endpoint(
                     match handle.read_interrupt(endpoint.address, buf, timeout) {
                         Ok(len) => {
                             unsafe { vec.set_len(len) };
-                            process(&vec);
+                            process(&vec, &events_snd);
                         }
                         Err(err) => println!("could not read from endpoint: {}", err),
                     }
@@ -186,7 +201,7 @@ fn read_endpoint(
                     match handle.read_bulk(endpoint.address, buf, timeout) {
                         Ok(len) => {
                             unsafe { vec.set_len(len) };
-                            process(&vec);
+                            process(&vec, events_snd);
                         }
                         Err(err) => println!("could not read from endpoint: {}", err),
                     }
@@ -212,7 +227,7 @@ fn configure_endpoint<'a>(
     Ok(())
 }
 
-fn process(vec: &Vec<u8>) {
+fn process(vec: &Vec<u8>, events_sdr: &mpsc::UnboundedSender<Vec<u8>>) {
     let mut nonzeroes: Vec<u8> = vec.iter().filter(|x| **x != 0).map(|x| *x).collect();
     let mut i = 0;
     // clean up the signal
@@ -231,6 +246,9 @@ fn process(vec: &Vec<u8>) {
             i += 1;
         }
     }
+
+    events_sdr.send(nonzeroes.clone()).unwrap();
+
     let nonzeroes_hex_strs: Vec<String> =
         nonzeroes.iter().map(|x| format!("{:#04X}", *x)).collect();
     if nonzeroes.len() > 0 {
@@ -239,6 +257,20 @@ fn process(vec: &Vec<u8>) {
 }
 
 #[tokio::main]
-async fn event_writer(events_rcv: mpsc::UnboundedReceiver<Vec<u8>>) {
-    // todo
+async fn event_writer(mut events_rcv: mpsc::UnboundedReceiver<Vec<u8>>) {
+    let pool = SqlitePoolOptions::new()
+        .connect("sqlite:/home/pi/storage/diminuendo.sqlite")
+        .await
+        .unwrap();
+
+    while let Some(nonzeroes) = events_rcv.recv().await {
+        let t = Utc::now();
+        let nonzeroes: Vec<u8> = nonzeroes;
+        sqlx::query("insert into events (ts, events) values (?, ?)")
+            .bind(t.timestamp())
+            .bind(nonzeroes)
+            .execute(&pool)
+            .await
+            .unwrap();
+    }
 }

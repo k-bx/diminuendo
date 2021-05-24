@@ -12,3 +12,4 @@ libusb = "~0.3.0"
 thiserror = "~1.0.24"
 sqlx = { version = "~0.5.4", features = [ "runtime-tokio-rustls", "sqlite" ] }
 tokio = { version = "~1.6.0", features = [ "full" ] }
+chrono = "~0.4.19"
