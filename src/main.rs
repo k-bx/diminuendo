@@ -247,7 +247,9 @@ fn process(vec: &Vec<u8>, events_sdr: &mpsc::UnboundedSender<Vec<u8>>) {
         }
     }
 
-    events_sdr.send(nonzeroes.clone()).unwrap();
+    if nonzeroes.len() > 0 {
+        events_sdr.send(nonzeroes.clone()).unwrap();
+    }
 
     let nonzeroes_hex_strs: Vec<String> =
         nonzeroes.iter().map(|x| format!("{:#04X}", *x)).collect();
@@ -266,11 +268,13 @@ async fn event_writer(mut events_rcv: mpsc::UnboundedReceiver<Vec<u8>>) {
     while let Some(nonzeroes) = events_rcv.recv().await {
         let t = Utc::now();
         let nonzeroes: Vec<u8> = nonzeroes;
-        sqlx::query("insert into events (ts, events) values (?, ?)")
-            .bind(t.timestamp())
-            .bind(nonzeroes)
-            .execute(&pool)
-            .await
-            .unwrap();
+        if nonzeroes.len() > 0 {
+            sqlx::query("insert into events (ts, events) values (?, ?)")
+                .bind(t.timestamp())
+                .bind(nonzeroes)
+                .execute(&pool)
+                .await
+                .unwrap();
+        }
     }
 }
