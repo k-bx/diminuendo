@@ -1,12 +1,13 @@
 [Unit]
 Description=diminuendo
+StartLimitInterval=0
 
 [Service]
 ExecStart=/home/pi/src/diminuendo/target/release/diminuendo
 Restart=always
 User=root
 Group=root
-RestartSec=5s
+RestartSec=200ms
 WorkingDirectory=/home/pi/src/diminuendo/
 
 [Install]
