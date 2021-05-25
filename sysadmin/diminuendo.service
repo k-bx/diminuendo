@@ -7,7 +7,7 @@ ExecStart=/home/pi/src/diminuendo/target/release/diminuendo
 Restart=always
 User=root
 Group=root
-RestartSec=200ms
+RestartSec=1s
 WorkingDirectory=/home/pi/src/diminuendo/
 
 [Install]
