@@ -38,6 +38,7 @@ CREATE INDEX idx_ts on events (ts);
 - [x] relaunch on start
 - [x] reconnect on piano turned on/off
 - [ ] **p1** play recordings on mobile web
+  - https://github.com/GuitarML/PedalNetRT
   - https://github.com/plunkgj/midi2wave
   - https://github.com/Isaaafc/midi2wave
   - https://magenta.tensorflow.org/maestro-wave2midi2wave
