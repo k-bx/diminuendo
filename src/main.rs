@@ -194,7 +194,10 @@ fn read_endpoint(
                             unsafe { vec.set_len(len) };
                             process(&vec, &events_snd);
                         }
-                        Err(err) => println!("could not read from endpoint: {}", err),
+                        Err(err) => {
+                            println!("could not read from endpoint: {}; exiting", err);
+                            return;
+                        }
                     }
                 }
                 libusb::TransferType::Bulk => {
@@ -203,7 +206,10 @@ fn read_endpoint(
                             unsafe { vec.set_len(len) };
                             process(&vec, events_snd);
                         }
-                        Err(err) => println!("could not read from endpoint: {}", err),
+                        Err(err) => {
+                            println!("could not read from endpoint: {}; exiting", err);
+                            return;
+                        }
                     }
                 }
                 _ => (),
