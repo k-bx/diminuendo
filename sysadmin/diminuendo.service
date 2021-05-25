@@ -1,0 +1,13 @@
+[Unit]
+Description=diminuendo
+
+[Service]
+ExecStart=/home/pi/src/diminuendo/target/release/diminuendo
+Restart=always
+User=root
+Group=root
+RestartSec=5s
+WorkingDirectory=/home/pi/src/diminuendo/
+
+[Install]
+WantedBy=multi-user.target
