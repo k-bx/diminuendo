@@ -38,6 +38,11 @@ CREATE INDEX idx_ts on events (ts);
 - [x] relaunch on start
 - [x] reconnect on piano turned on/off
 - [ ] **p1** play recordings on mobile web
+  - https://github.com/plunkgj/midi2wave
+  - https://github.com/Isaaafc/midi2wave
+  - https://magenta.tensorflow.org/maestro-wave2midi2wave
+  - https://github.com/craffel/pretty-midi/blob/5e3db4bfa6be0d6e87d7a9e8fcf5f4ed81e97a8d/pretty_midi/instrument.py#L345
+  - https://www.xlnaudio.com/products/addictive_keys/instrument/modern_upright
 - [ ] **p2** auto-select USB device
 - [ ] **p2** create/migrate database automatically
 - [ ] **p2** choose db from current dir if not present elsewhere
