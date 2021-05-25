@@ -1,6 +1,7 @@
 # Setup
 
 - Clone on your raspberry pi in `~/src/diminuendo`
+- Build `https://github.com/libusb/libusb.git` (or from downloads), preferrably via checkinstall
 - Build via `cargo build --release`
 - Put `sysadmin/diminuendo.service` in `/etc/systemd/system`; do `sudo systemctl daemon-reload`; `sudo systemctl enable diminuendo`; `sudo systemctl start diminuendo`
 
@@ -21,6 +22,13 @@ sqlite> select select strftime("%Y-%m-%d %H:%M:%f", ts/1000.0, 'unixepoch'),leng
 2021-05-25 07:17:34|3|  :
 2021-05-25 07:17:33|3|  2
 2021-05-25 07:17:33|4|  5$
+```
+
+Creating it is:
+
+```sql
+CREATE TABLE events ( ts DATETIME DEFAULT CURRENT_TIMESTAMP, events BLOB);
+CREATE INDEX idx_ts on events (ts);
 ```
 
 # TODO
