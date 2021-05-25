@@ -270,7 +270,7 @@ async fn event_writer(mut events_rcv: mpsc::UnboundedReceiver<Vec<u8>>) {
         let nonzeroes: Vec<u8> = nonzeroes;
         if nonzeroes.len() > 0 {
             sqlx::query("insert into events (ts, events) values (?, ?)")
-                .bind(t.timestamp())
+                .bind(t.timestamp_millis())
                 .bind(nonzeroes)
                 .execute(&pool)
                 .await

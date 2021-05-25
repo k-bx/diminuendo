@@ -10,7 +10,7 @@ Your data is written in `~/storage/diminuendo.sqlite`
 pi@raspberrypi:~/storage $ sqlite3 diminuendo.sqlite
 SQLite version 3.27.2 2019-02-25 16:06:06
 Enter ".help" for usage hints.
-sqlite> select datetime(ts, 'unixepoch'),length(events),events from events order by ts desc limit 10;
+sqlite> select select strftime("%Y-%m-%d %H:%M:%f", ts/1000.0, 'unixepoch'),length(events),events from events order by ts desc limit 10;
 2021-05-25 07:19:05|9|  0       <       7
 2021-05-25 07:19:00|4|  <"
 2021-05-25 07:18:59|4|  7"
@@ -26,6 +26,7 @@ sqlite> select datetime(ts, 'unixepoch'),length(events),events from events order
 # TODO
 
 - [x] write events to sqlite
+- [x] millisecond precision in events
 - [ ] **p1** relaunch on start
 - [ ] **p1** reconnect on piano turned on/off
 - [ ] **p1** play recordings on mobile web
