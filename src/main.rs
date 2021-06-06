@@ -256,14 +256,18 @@ fn process(vec: &Vec<u8>, events_sdr: &mpsc::UnboundedSender<Vec<u8>>) {
         }
     }
 
+    if nonzeroes.iter().map(|x| *x == 0x00).all(|x| x == true) {
+        return;
+    }
+
     if nonzeroes.len() > 0 {
         events_sdr.send(nonzeroes.clone()).unwrap();
     }
-
     let nonzeroes_hex_strs: Vec<String> =
         nonzeroes.iter().map(|x| format!("{:#04X}", *x)).collect();
+    let nonzero_hex_str = nonzeroes_hex_strs.join(", ");
     if nonzeroes.len() > 0 {
-        println!(" - read nonzeroes: {:?}", nonzeroes_hex_strs);
+        println!(" - read nonzeroes: [{}]", nonzero_hex_str);
     }
 }
 
