@@ -240,7 +240,9 @@ fn process(vec: &Vec<u8>, events_sdr: &mpsc::UnboundedSender<Vec<u8>>) {
     let mut i = 0;
     while i + 1 < nonzeroes.len() {
         let mut do_inc = true;
-        if nonzeroes[i] == 0x0f && nonzeroes[i + 1] == 0xf8 {
+        if nonzeroes[0] == 0x00 {
+            nonzeroes.remove(i);
+        } else if nonzeroes[i] == 0x0f && nonzeroes[i + 1] == 0xf8 {
             nonzeroes.remove(i);
             nonzeroes.remove(i);
             do_inc = false;
@@ -251,15 +253,6 @@ fn process(vec: &Vec<u8>, events_sdr: &mpsc::UnboundedSender<Vec<u8>>) {
         }
         if do_inc {
             i += 1;
-        }
-    }
-
-    for x in nonzeroes.clone().iter() {
-        if *x == 0x00 {
-            nonzeroes.remove(0);
-        } else {
-            println!("> got to nonzero. breaking: {:?}", *x);
-            break;
         }
     }
 
