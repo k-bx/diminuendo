@@ -240,6 +240,7 @@ fn process(vec: &Vec<u8>, events_sdr: &mpsc::UnboundedSender<Vec<u8>>) {
         if *x == 0x00 {
             nonzeroes.remove(0);
         } else {
+            println!("> got to nonzero. breaking: {:?}", *x);
             break;
         }
     }
