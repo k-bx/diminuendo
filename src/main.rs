@@ -234,39 +234,40 @@ fn configure_endpoint<'a>(
 }
 
 fn process(vec: &Vec<u8>, events_sdr: &mpsc::UnboundedSender<Vec<u8>>) {
-    let mut nonzeroes = vec.clone();
-
-    // clean up the signal
-    let mut i = 0;
-    while i + 1 < nonzeroes.len() {
-        let mut do_inc = true;
-        if nonzeroes[0] == 0x00 {
-            nonzeroes.remove(i);
-        } else if nonzeroes[i] == 0x0f && nonzeroes[i + 1] == 0xf8 {
-            nonzeroes.remove(i);
-            nonzeroes.remove(i);
-            do_inc = false;
-        } else if nonzeroes[i] == 0x0f && nonzeroes[i + 1] == 0xfe {
-            nonzeroes.remove(i);
-            nonzeroes.remove(i);
-            do_inc = false;
-        }
-        if do_inc {
-            i += 1;
-        }
-    }
-
-    if nonzeroes.iter().map(|x| *x == 0x00).all(|x| x == true) {
+    if vec
+        .iter()
+        .map(|x| *x == 0x00 || *x == 0x0f || *x == 0xf8 || *x == 0xfe)
+        .all(|x| x == true)
+    {
         return;
     }
 
-    if nonzeroes.len() > 0 {
-        events_sdr.send(nonzeroes.clone()).unwrap();
-    }
-    let nonzeroes_hex_strs: Vec<String> =
-        nonzeroes.iter().map(|x| format!("{:#04X}", *x)).collect();
+    // let nonzeroes = vec.clone();
+
+    // // clean up the signal
+    // let mut i = 0;
+    // while i + 1 < nonzeroes.len() {
+    //     let mut do_inc = true;
+    //     if nonzeroes[0] == 0x00 {
+    //         nonzeroes.remove(i);
+    //     } else if nonzeroes[i] == 0x0f && nonzeroes[i + 1] == 0xf8 {
+    //         nonzeroes.remove(i);
+    //         nonzeroes.remove(i);
+    //         do_inc = false;
+    //     } else if nonzeroes[i] == 0x0f && nonzeroes[i + 1] == 0xfe {
+    //         nonzeroes.remove(i);
+    //         nonzeroes.remove(i);
+    //         do_inc = false;
+    //     }
+    //     if do_inc {
+    //         i += 1;
+    //     }
+    // }
+
+    events_sdr.send(vec.clone()).unwrap();
+    let nonzeroes_hex_strs: Vec<String> = vec.iter().map(|x| format!("{:#04X}", *x)).collect();
     let nonzero_hex_str = nonzeroes_hex_strs.join(", ");
-    if nonzeroes.len() > 0 {
+    if vec.len() > 0 {
         println!(" - read nonzeroes: [{}]", nonzero_hex_str);
     }
 }
