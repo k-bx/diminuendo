@@ -234,7 +234,15 @@ fn configure_endpoint<'a>(
 }
 
 fn process(vec: &Vec<u8>, events_sdr: &mpsc::UnboundedSender<Vec<u8>>) {
-    let mut nonzeroes: Vec<u8> = vec.iter().filter(|x| **x != 0).map(|x| *x).collect();
+    // let mut nonzeroes: Vec<u8> = vec.iter().filter(|x| **x != 0).map(|x| *x).collect();
+    let mut nonzeroes = vec.clone();
+    for x in vec.iter() {
+        if *x == 0x00 {
+            nonzeroes.remove(0);
+        } else {
+            break;
+        }
+    }
     let mut i = 0;
     // clean up the signal
     while i + 1 < nonzeroes.len() {
